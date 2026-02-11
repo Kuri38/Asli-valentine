@@ -606,11 +606,11 @@
     </style>
 </head>
 <body>
-    
-<audio autoplay loop>
-        <source src="music/music.mp3" type="audio/mpeg">
-        Your browser does not support the audio tag.
+    <!-- BACKGROUND MUSIC -->
+    <audio id="bgMusic" loop>
+        <source src="/music/music.mp3" type="audio/mpeg">
     </audio>
+
     <!-- ENVELOPE: no modal, just envelope on pink background -->
     <div id="envelopeStage">
         <div class="envelope" id="envelope">
@@ -630,7 +630,7 @@
         <div class="modal-inner">
             <!-- VIEW: Puzzle (playing + completed state in same view) -->
             <div id="puzzleView" class="modal-view">
-                <h1 class="modal-title">Dear Asli...</h1>
+                <h1 class="modal-title">Dear Gaby...</h1>
                 <div class="puzzle-container" id="puzzleContainer">
                     <div class="puzzle-grid-wrap" id="puzzleGridWrap">
                         <div class="puzzle-grid" id="puzzleGrid"></div>
@@ -829,6 +829,29 @@
             document.body.appendChild(confetti);
             setTimeout(() => confetti.remove(), (duration + 0.5) * 1000);
         }
+
+        // --- BACKGROUND MUSIC HANDLING ---
+        // Browsers often block autoplay. This script tries to play immediately,
+        // but if blocked, it waits for the first user interaction (click/touch).
+        window.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('bgMusic');
+            audio.volume = 0.5; // Set volume to 50%
+            
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log("Autoplay prevented by browser. Waiting for interaction.");
+                    const enableAudio = () => {
+                        audio.play();
+                        document.removeEventListener('click', enableAudio);
+                        document.removeEventListener('touchstart', enableAudio);
+                    };
+                    document.addEventListener('click', enableAudio);
+                    document.addEventListener('touchstart', enableAudio);
+                });
+            }
+        });
     </script>
 </body>
 </html>
