@@ -18,12 +18,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #FFDAE9;
+            /* MODERN: Deep black background */
+            background: #050505; 
             overflow: auto;
             padding: 24px;
         }
 
-        /* Envelope stage: no modal, just envelope on pink background */
+        /* Envelope stage */
         #envelopeStage {
             display: flex;
             flex-direction: column;
@@ -46,7 +47,7 @@
             background: white;
             padding: 40px 36px;
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5); /* Deeper shadow for dark mode contrast */
             width: fit-content;
             max-width: min(650px, calc(100vw - 48px));
             min-width: 0;
@@ -82,34 +83,39 @@
             opacity: 1;
         }
 
+        /* MODERN: Dark Grey Envelope */
         .envelope {
             position: relative;
             width: 220px;
             height: 160px;
-            background: #f5e6d3;
-            border: 1px solid #d4c4a8;
+            background: #2a2a2a; /* Dark grey base */
+            border: 1px solid #3d3d3d; /* Subtle lighter border */
             border-radius: 4px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            /* Modern soft glow instead of hard shadow */
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
             cursor: pointer;
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
 
         .envelope:hover:not(.opening) {
             transform: scale(1.05);
-            box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.6);
         }
 
+        /* MODERN: Gradient Flap */
         .envelope-flap {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(165deg, #e8d5c4 0%, #d4c4a8 45%, #c9b89a 100%);
+            /* Metallic gradient: Lighter grey to darker grey */
+            background: linear-gradient(165deg, #444 0%, #2a2a2a 45%, #1f1f1f 100%);
             clip-path: polygon(0 0, 50% 50%, 100% 0);
             transform-origin: top center;
             transition: transform 0.8s cubic-bezier(0.34, 1.2, 0.64, 1);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border-top: 1px solid rgba(255,255,255,0.1); /* Highlight on top edge */
         }
 
         .envelope-flap-outline {
@@ -123,6 +129,7 @@
 
         .envelope-flap-outline line {
             vector-effect: non-scaling-stroke;
+            stroke: #555; /* Darker stroke line */
         }
 
         .envelope.opening .envelope-flap {
@@ -136,7 +143,8 @@
             transform: translate(-50%, -50%);
             width: 40px;
             height: 40px;
-            color: #c41e3a;
+            color: #ff3b3b; /* Brighter red to pop against dark grey */
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); /* Shadow for depth */
             pointer-events: none;
             z-index: 1;
             transition: opacity 0.35s ease;
@@ -411,7 +419,7 @@
         .yes-only-btn {
             font-size: 20px;
             padding: 12px 24px;
-            background: #FFDAE9;
+            background: #FFDAE9; /* Kept pink for nice contrast against black/grey themes */
             color: #333;
             border: 1px solid rgba(0,0,0,0.1);
             border-radius: 50px;
@@ -570,7 +578,7 @@
         .success-yay {
             font-size: 24px;
             font-weight: 600;
-            color: #111;
+            color: #f0f0f0; /* Light text for dark bg in success state */
             margin-bottom: 20px;
         }
 
@@ -590,7 +598,7 @@
         .reset-btn {
             background: none;
             border: none;
-            color: #666;
+            color: #888;
             font-size: 0.9em;
             cursor: pointer;
             text-decoration: underline;
@@ -600,7 +608,7 @@
         }
 
         .reset-btn:hover {
-            color: #111;
+            color: #fff;
         }
 
     </style>
@@ -611,7 +619,7 @@
         <source src="/music/music.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- ENVELOPE: no modal, just envelope on pink background -->
+    <!-- ENVELOPE: no modal, just envelope on dark background -->
     <div id="envelopeStage">
         <div class="envelope" id="envelope">
             <div class="envelope-heart" aria-hidden="true">
@@ -619,8 +627,8 @@
             </div>
             <div class="envelope-flap">
                 <svg class="envelope-flap-outline" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-                    <line x1="0" y1="0" x2="50" y2="50" stroke="#d4c4a8" stroke-width="3" vector-effect="non-scaling-stroke" />
-                    <line x1="50" y1="50" x2="100" y2="0" stroke="#d4c4a8" stroke-width="3" vector-effect="non-scaling-stroke" />
+                    <line x1="0" y1="0" x2="50" y2="50" stroke="#555" stroke-width="3" vector-effect="non-scaling-stroke" />
+                    <line x1="50" y1="50" x2="100" y2="0" stroke="#555" stroke-width="3" vector-effect="non-scaling-stroke" />
                 </svg>
             </div>
         </div>
@@ -831,8 +839,6 @@
         }
 
         // --- BACKGROUND MUSIC HANDLING ---
-        // Browsers often block autoplay. This script tries to play immediately,
-        // but if blocked, it waits for the first user interaction (click/touch).
         window.addEventListener('DOMContentLoaded', () => {
             const audio = document.getElementById('bgMusic');
             audio.volume = 0.5; // Set volume to 50%
