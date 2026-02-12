@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>❤️</title>
     <style>
+        /* [Keep all your existing CSS exactly as it was - no changes needed] */
         * {
             margin: 0;
             padding: 0;
@@ -23,7 +24,6 @@
             padding: 24px;
         }
 
-        /* Envelope stage: no modal, just envelope on black background */
         #envelopeStage {
             display: flex;
             flex-direction: column;
@@ -356,7 +356,6 @@
             25% { transform: scale(1.1); }
         }
 
-
         .confetti {
             position: fixed;
             width: 10px;
@@ -392,7 +391,6 @@
             }
         }
 
-        /* Celebration effect when puzzle solved */
         @keyframes tileDisappear {
             0% {
                 opacity: 1;
@@ -408,7 +406,6 @@
             animation: tileDisappear 0.5s ease forwards;
         }
 
-        /* Base Yes button: defined before media queries so responsive font-size overrides apply */
         .yes-only-btn {
             font-size: 20px;
             padding: 12px 24px;
@@ -508,7 +505,6 @@
             }
         }
 
-        /* Short viewport: shrink contents to respect padding / prevent overflow */
         @media (max-height: 800px) {
             body {
                 padding: 14px;
@@ -547,7 +543,6 @@
                 padding: 10px 36px;
             }
         }
-        /* Short and narrow: apply stronger scale so content fits */
         @media (max-height: 600px) and (max-width: 480px) {
             .container {
                 transform: scale(0.65);
@@ -561,14 +556,12 @@
             }
         }
 
-        /* Success view: no modal card, content on black background only */
         .container.container--success {
             background: transparent;
             box-shadow: none;
             padding: 24px;
         }
 
-        /* Success: Yay + gif + Reset */
         .success-yay {
             font-size: 24px;
             font-weight: 600;
@@ -605,13 +598,14 @@
         .reset-btn:hover {
             color: #f0f0f0;
         }
-
     </style>
 </head>
 <body>
     <!-- Background Music -->
-    <audio id="bgMusic" loop preload="auto">
+    <audio id="bgMusic" loop>
+        <source src="music/music.mp3" type="audio/mpeg">
         <source src="/music/music.mp3" type="audio/mpeg">
+        <source src="music.mp3" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
 
@@ -663,20 +657,30 @@
 
     <script>
         const bgMusic = document.getElementById('bgMusic');
-        let audioUnlocked = false;
+        let audioStarted = false;
 
-        // Try to play audio when user clicks the envelope
-        function unlockAudio() {
-            if (!audioUnlocked) {
-                bgMusic.play().then(() => {
-                    audioUnlocked = true;
-                }).catch(err => {
-                    console.log('Audio play prevented:', err);
-                });
+        // Function to start audio
+        function startAudio() {
+            if (!audioStarted) {
+                // Set volume first
+                bgMusic.volume = 0.5;
+                
+                // Try to play
+                const playPromise = bgMusic.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        audioStarted = true;
+                        console.log('✅ Music started successfully!');
+                    }).catch(error => {
+                        console.error('❌ Autoplay blocked:', error);
+                        console.log('💡 Click the envelope to start music');
+                    });
+                }
             }
         }
 
-        // ENVELOPE → MODAL (one modal, two views: puzzle + success)
+        // ENVELOPE → MODAL
         const envelopeStage = document.getElementById('envelopeStage');
         const envelope = document.getElementById('envelope');
         const puzzleGrid = document.getElementById('puzzleGrid');
@@ -684,8 +688,8 @@
         const successView = document.getElementById('successView');
         
         envelope.addEventListener('click', () => {
-            // Start music on envelope click (user interaction)
-            unlockAudio();
+            // Try to start audio on user interaction
+            startAudio();
             
             envelope.style.pointerEvents = 'none';
             const heart = envelope.querySelector('.envelope-heart');
@@ -707,9 +711,8 @@
         
         let tiles = [];
         
-        // 3x3 puzzle: pieces 1–9, empty piece is 3 (top-right).
         const EMPTY_PIECE = 3;
-        const solution = [1, 2, 3, 4, 5, 6, 7, 8, 9]; // empty (3) at index 2 = top-right
+        const solution = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         let currentState = [...solution];
         
         function initPuzzle() {
@@ -718,7 +721,6 @@
         }
         
         function scramblePuzzle() {
-            // TESTING NOTE: Use "i < 1" instead of "i < 10" so that the puzzle is one move away from completion
             for (let i = 0; i < 10; i++) {
                 const emptyIndex = currentState.indexOf(EMPTY_PIECE);
                 const validMoves = getValidMoves(emptyIndex);
@@ -750,7 +752,6 @@
                 
                 if (piece === EMPTY_PIECE) {
                     tile.classList.add('empty');
-                    // No image: empty space is transparent until puzzle is solved
                 } else {
                     tile.style.backgroundImage = `url('images/tile-${piece}.png')`;
                     tile.onclick = () => moveTile(index);
@@ -769,7 +770,6 @@
                 [currentState[emptyIndex], currentState[index]] = [currentState[index], currentState[emptyIndex]];
                 renderPuzzle();
                 
-                // Check if solved
                 if (isPuzzleSolved()) {
                     setTimeout(onPuzzleSolved, 300);
                 }
